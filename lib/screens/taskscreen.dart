@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:todoey/models/task.dart';
 import 'package:todoey/widgets/task_list.dart';
 import 'package:todoey/screens/add_task.dart';
+import 'package:todoey/models/task_data.dart';
+import 'package:provider/provider.dart';
 
 
 class TaskScreen extends StatefulWidget {
@@ -14,30 +15,9 @@ class TaskScreen extends StatefulWidget {
 
 class _TaskScreenState extends State<TaskScreen> {
 
-   List<Task> tasks = [
-    
-  ];
+   
 
-  void removeTask(Task task){
-    setState((){
-      tasks.remove(task);
 
-    });
-
-  }
-
-  void toggleTask(Task task) {
-    setState(() {
-      task.toggleDone();
-    });
-  }
-
-  void updateTask(Task task, String newName){
-    setState((){
-      task.name = newName;
-
-    });
-  }
 
 
 
@@ -51,13 +31,13 @@ class _TaskScreenState extends State<TaskScreen> {
         onPressed: () async {
           final newTaskTitle = await showModalBottomSheet(context: context, isScrollControlled: true, builder: (context) => AddTaskScreen());
           if (newTaskTitle != null ){
-            setState(() {
-              tasks.add(Task(name: newTaskTitle));
+            
+              context.read<TaskData>().addTask(newTaskTitle);
 
-            }
-            );
           }
-        },
+            
+          }
+      
       ),
       body:Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,10 +76,7 @@ class _TaskScreenState extends State<TaskScreen> {
               
                 ),
               
-              child: TaskList(tasks:tasks,
-              toggleTask: toggleTask,
-              removeTask:removeTask,
-              updateTask:updateTask)
+              child: TaskList()
               ),
             )
         ],

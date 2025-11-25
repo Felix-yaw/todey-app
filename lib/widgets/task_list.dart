@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:todoey/widgets/task_tile.dart';
 import 'package:todoey/models/task.dart';
+import 'package:provider/provider.dart';
+import 'package:todoey/models/task_data.dart';
 
 
 class TaskList extends StatefulWidget {
   
+  
 
   
-  final List<Task> tasks;
-  final Function(Task) toggleTask;  
-  final Function(Task) removeTask;
-  final Function(Task, String) updateTask;
-  const TaskList({super.key, required this.tasks, required this.toggleTask, required this.removeTask, required this.updateTask});
+  
+  const TaskList({super.key,} );
 
   @override
   State<TaskList> createState() => _TaskListState();
@@ -23,14 +23,16 @@ class _TaskListState extends State<TaskList> {
   List<Task> tasks = [];
   @override
   Widget build(BuildContext context) {
+  final taskData = context.watch<TaskData>();
+  final tasks = taskData.tasks;
   return ListView(
-    children: widget.tasks.map((task) {
+    children: tasks.map((task) {
       return TaskTile(
         taskTitle: task.name,
         isChecked: task.isDone,
-        toggleCheckBoxState: (_) => widget.toggleTask(task),
-        removeTask: () => widget.removeTask(task),
-        updateTask: (newName) => widget.updateTask(task, newName),
+        toggleCheckBoxState: (_) => taskData.toggleTask(task),
+        removeTask: () => taskData.removeTask(task),
+        updateTask: (newName) => taskData.updateTask(task, newName),
       
           );
     }).toList(),
