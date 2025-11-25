@@ -1,49 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:todoey/screens/add_task.dart';
 
+class TaskTile extends StatelessWidget {
+  final bool isChecked;
+  final String taskTitle;
+  final Function(bool?)? toggleCheckBoxState; 
+  final Function() removeTask;
+  final Function(String newName) updateTask;
 
-class TaskTile extends StatefulWidget {
-  const TaskTile({super.key});
-  
-  @override
-  State<TaskTile> createState() => _TaskTileState();
-}
-   bool isChecked = false;
-class _TaskTileState extends State<TaskTile> {
- 
+  const TaskTile({
+    super.key,
+    required this.isChecked,
+    required this.taskTitle,
+    required this.toggleCheckBoxState,
+    required this.removeTask,
+    required this.updateTask
+
+    
+  });
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text('This is a task.'),
-      trailing: TaskCheck()
+      title: Text(
+        taskTitle,
+        style: TextStyle(
+          decoration: isChecked ? TextDecoration.lineThrough : null,
+        ),
+      ),
+      trailing: Checkbox(
+        value: isChecked,
+        activeColor: Colors.lightBlueAccent,
+        onChanged: toggleCheckBoxState,
+      ),
+      onLongPress:removeTask,
+      onTap: () async{
+        final String? updatedText = await showModalBottomSheet(context: context, builder: (context)=> AddTaskScreen(
+          initialText: taskTitle,
+          titleText: 'Update Task',
+          buttonText: 'Update'
         
+        ));
+        
+        if (updatedText != null){
+          updateTask(updatedText);
+        }
+        
+      },
     );
   }
 }
-
-class TaskCheck extends StatefulWidget {
-  
-   
-  @override
-  State<TaskCheck> createState() => _TaskCheckState();
-}
-
-class _TaskCheckState extends State<TaskCheck> {
-  
-  @override
-  Widget build(BuildContext context) {
-    return Checkbox(
-    value: isChecked,
-    activeColor: Colors.lightBlueAccent,
-     onChanged: (newValue) {
-      setState(() {
-        isChecked = newValue!;
-        
-      });
-      
-    },);
-      
-
-  }
-}
-
