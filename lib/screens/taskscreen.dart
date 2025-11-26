@@ -23,13 +23,15 @@ class _TaskScreenState extends State<TaskScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final unfinishedTasks = context.watch<TaskData>().unfinishedTasks;
+    final finishedTasks = context.watch<TaskData>().finishedTasks;
     return  Scaffold(
       backgroundColor: Colors.lightBlueAccent,
       floatingActionButton:   FloatingActionButton(
         backgroundColor: Colors.lightBlueAccent,
         child: Icon(Icons.add),
         onPressed: () async {
-          final newTaskTitle = await showModalBottomSheet(context: context, isScrollControlled: true, builder: (context) => AddTaskScreen());
+          final newTaskTitle = await showModalBottomSheet(context: context, builder: (context) => AddTaskScreen());
           if (newTaskTitle != null ){
             
               context.read<TaskData>().addTask(newTaskTitle);
@@ -56,11 +58,13 @@ class _TaskScreenState extends State<TaskScreen> {
           SizedBox(height: 10),
             Text('Todoey', style: TextStyle(color:Colors.white, fontSize:50, fontWeight: FontWeight.w700)),
             Text(
-              '12 Tasks',
-              style:TextStyle(color: Colors.white, fontSize: 20)
+              '$finishedTasks Task Undone',
+              style:TextStyle(color: Colors.white, fontSize: 20),
+            
               
             ),
-            
+
+            Text('$unfinishedTasks Tasks Done', style:TextStyle(color: Colors.white, fontSize: 20)),
           ],
            
           ),
