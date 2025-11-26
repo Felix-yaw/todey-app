@@ -8,8 +8,8 @@ class TaskData extends ChangeNotifier {
   ];
   int get taskCount => tasks.length;
   
-  int get finishedTasks => tasks.where((task) => task.isDone).length;
-  int get unfinishedTasks => tasks.where((task) => !task.isDone).length;
+  int get finishedTasks => tasks.where((task) => !task.isDone).length;
+  int get unfinishedTasks => tasks.where((task) => task.isDone).length;
   
   List<Task> get task => tasks;
 
