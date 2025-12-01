@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todoey/screens/add_task.dart';
+
 
 class TaskTile extends StatelessWidget {
   final bool isChecked;
@@ -35,16 +35,40 @@ class TaskTile extends StatelessWidget {
       ),
       onLongPress:removeTask,
       onTap: () async{
-        final String? updatedText = await showModalBottomSheet(context: context, builder: (context)=> AddTaskScreen(
-          initialText: taskTitle,
-          titleText: 'Update Task',
-          buttonText: 'Update'
+        final updatedText = await showDialog<String>(
+    context: context,
+    builder: (context) {
+      TextEditingController controller = TextEditingController(text: taskTitle);
+
+      return AlertDialog(
+        title: Text("Update Task", style: TextStyle(color: Colors.lightBlue)),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          TextButton(
+            child: Text("Cancel", style: TextStyle(color: Colors.lightBlueAccent)),
+            onPressed: () => Navigator.pop(context),
+          ),
+          TextButton(
+            child: Text("Update", style: TextStyle(color: Colors.lightBlueAccent)),
+            onPressed: () {
+              Navigator.pop(context, controller.text.trim());
+            },
+          ),
+        ],
+      );
+    },
+  );
+
+  // Update the task if the user entered something
+  if (updatedText != null && updatedText.isNotEmpty) {
+    updateTask(updatedText);
+  }
+
         
-        ));
-        
-        if (updatedText != null){
-          updateTask(updatedText);
-        }
         
       },
     );

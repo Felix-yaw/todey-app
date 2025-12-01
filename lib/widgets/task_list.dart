@@ -5,22 +5,16 @@ import 'package:provider/provider.dart';
 import 'package:todoey/provider/task_data.dart';
 
 
-class TaskList extends StatefulWidget {
+class TaskList extends StatelessWidget {
   
   
 
   
   
-  const TaskList({super.key,} );
-
-  @override
-  State<TaskList> createState() => _TaskListState();
-}
-  
-
-class _TaskListState extends State<TaskList> {
+ TaskList({super.key,} );
 
   List<Task> tasks = [];
+
   @override
   Widget build(BuildContext context) {
   final taskData = context.watch<TaskData>();
