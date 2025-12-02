@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:todoey/screens/add_task.dart';
 
-class TaskTile extends StatelessWidget {
+class TaskTile extends StatefulWidget {
   final bool isChecked;
   final String taskTitle;
   final Function(bool?)? toggleCheckBoxState; 
@@ -15,37 +14,79 @@ class TaskTile extends StatelessWidget {
     required this.toggleCheckBoxState,
     required this.removeTask,
     required this.updateTask
-
-    
   });
 
+  @override
+  State<TaskTile> createState() => _TaskTileState();
+}
+
+class _TaskTileState extends State<TaskTile> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(
-        taskTitle,
+        widget.taskTitle,
         style: TextStyle(
-          decoration: isChecked ? TextDecoration.lineThrough : null,
+          decoration: widget.isChecked ? TextDecoration.lineThrough : null,
         ),
       ),
       trailing: Checkbox(
-        value: isChecked,
+        value: widget.isChecked,
         activeColor: Colors.lightBlueAccent,
-        onChanged: toggleCheckBoxState,
+        onChanged: widget.toggleCheckBoxState,
       ),
-      onLongPress:removeTask,
-      onTap: () async{
-        final String? updatedText = await showModalBottomSheet(context: context, builder: (context)=> AddTaskScreen(
-          initialText: taskTitle,
-          titleText: 'Update Task',
-          buttonText: 'Update'
-        
-        ));
-        
-        if (updatedText != null){
-          updateTask(updatedText);
+      onLongPress: widget.removeTask,
+      onTap: () async {
+        if (widget.isChecked) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("You cannot edit a completed task")),
+          );
+          return;
         }
-        
+
+        final updatedText = await showDialog<String>(
+          context: context,
+          builder: (context) {
+            TextEditingController controller =
+                TextEditingController(text: widget.taskTitle);
+
+            return StatefulBuilder(
+              builder: (context, setState) {
+                bool isChanged = controller.text.trim() != widget.taskTitle.trim();
+
+                return AlertDialog(
+                  title: Text("Update Task", style: TextStyle(color: Colors.lightBlue)),
+                  content: TextField(
+                    controller: controller,
+                    autofocus: true,
+                    textAlign: TextAlign.center,
+                    onChanged: (value) {
+                      setState(() {}); // triggers rebuild, isChanged recalculated
+                    },
+                  ),
+                  actions: [
+                    TextButton(
+                      child: Text("Cancel", style: TextStyle(color: Colors.lightBlueAccent)),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    TextButton(
+                      child: Text("Update", style: TextStyle(color: Colors.lightBlueAccent)),
+                      onPressed: isChanged
+                          ? () {
+                              Navigator.pop(context, controller.text.trim());
+                            }
+                          : null,
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        );
+
+        if (updatedText != null && updatedText.isNotEmpty) {
+          widget.updateTask(updatedText);
+        }
       },
     );
   }
